@@ -1,50 +1,44 @@
-import { useState } from "react"
+import { useEffect, useReducer } from "react"
 import { CartView } from "./components/CartView"
 import { CatalogView } from "./components/CatalogView"
-import { products } from "./data/products"
+import { itemsReducer } from "./reducer/itemsReducer";
+import { AddProductCart, DeleteProductCart, UpdateQuantityProductCart } from "./reducer/itemsActions";
 
 const initialCartItems = JSON.parse(sessionStorage.getItem('cart')) || [];
 
 export const CartApp = () => {
 
-    const [cartItems, setCartItems] = useState(initialCartItems);
+    //const [cartItems, setCartItems] = useState(initialCartItems);
+    const [cartItems, dispatch ] = useReducer(itemsReducer, initialCartItems);
+
+    useEffect( () =>  {
+        sessionStorage.setItem('cart',JSON.stringify(cartItems));
+    }, [cartItems])
+
 
     const handleAddProductCart = (product) => {
         // verificar si el id del product existe
         const hasItem = cartItems.find((i) => i.product.id === product.id);
         if (hasItem) {
-             // con filter
-            /*setCartItems([
-                ...cartItems.filter((i) => i.product.id !== product.id ),
-                {
-                    product,
-                    quantity: hasItem.quantity + 1,
-                }
-            ])*/
-
-            setCartItems(
-                cartItems.map((i) => {
-                    if(i.product.id === product.id){
-                        i.quantity = i.quantity + 1;
-                    }
-                    return i;
-                })
-            )
+           dispatch(
+             {
+                type: UpdateQuantityProductCart,
+                payload: product
+             }
+           )
         } else {
-            setCartItems([
-                ...cartItems,
-                {
-                    product, // product:product  el nombre del objeto es igual al nombre del que recibe
-                    quantity: 1,
-                }
-            ])
+            dispatch({
+                type: AddProductCart,
+                payload: product,
+            });
         }
     }
 
     const handlerDeleteProductCart = (id) => {
-        setCartItems([
-            ...cartItems.filter((i) => i.product.id !== id )
-        ])
+        dispatch({
+            type: DeleteProductCart,
+            payload: id
+        });
     }
 
     return (
