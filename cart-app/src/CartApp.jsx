@@ -1,6 +1,6 @@
-import { CartView } from "./components/CartView"
-import { CatalogView } from "./components/CatalogView"
 import { useItemsCart } from "./hooks/useItemsCart"
+import { Navbar } from "./components/Navbar";
+import { CartRoutes } from "./routes/CartRoutes";
 
 export const CartApp = () => {
 
@@ -8,15 +8,12 @@ export const CartApp = () => {
     
     return (
         <>
+        <Navbar ></Navbar>
             <div className='container'>
                 <h3>Card App</h3>
-                <CatalogView handler={handleAddProductCart} />
-
-                {cartItems?.length <= 0 || (
-                <div className='my-4 w-50'>
-                    <CartView items={cartItems} handlerDelete={handlerDeleteProductCart} />
-                </div>
-                )}
+                <CartRoutes cartItems={cartItems} handleAddProductCart={handleAddProductCart} 
+                 handlerDeleteProductCart={handlerDeleteProductCart} />          
+                
             </div>
         </>
 
