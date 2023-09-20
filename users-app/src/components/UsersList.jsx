@@ -1,7 +1,7 @@
 import React from 'react'
 import { UserRow } from './UserRow'
 
-export const UsersList = ({ users = [] }) => {
+export const UsersList = ({ handlerUserSelectedForm, handlerRemoveUser, users = [] }) => {
     return (
         <>
             <p>Listado de usuarios</p>
@@ -22,7 +22,9 @@ export const UsersList = ({ users = [] }) => {
                                 key={id}
                                 id={id}
                                 username={username}
-                                email={email} />
+                                email={email}
+                                handlerUserSelectedForm={handlerUserSelectedForm}
+                                handlerRemoveUser={handlerRemoveUser}/>
 
                         )
 

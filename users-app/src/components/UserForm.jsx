@@ -1,16 +1,17 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
-const initialUserForm = {
-    username:'',
-    password:'',
-    email:''
-}
-
-export const UserForm = ( { handlerAddUser }) => {
+export const UserForm = ( { userSelected, handlerAddUser, initialUserForm }) => {
 
     const [userForm, setUserForm] = useState(initialUserForm);
 
-    const {username, password, email } = userForm;
+    const {id, username, password, email } = userForm;
+
+    useEffect( () => {
+        setUserForm({
+            ...userSelected,
+            password: '',
+        });
+    }, [userSelected]);
 
     const onInputChange = ({ target }) => {
        //console.log(target.value);
@@ -23,7 +24,7 @@ export const UserForm = ( { handlerAddUser }) => {
 
     const onSubmit = ( event ) => {
         event.preventDefault();
-        if(!username || !password || !email) {
+        if(!username || (!password && id === 0) || !email) {
             alert('Los campos no pueden ser vacios');
             return;
         }
@@ -47,15 +48,18 @@ export const UserForm = ( { handlerAddUser }) => {
                     name="email" 
                     value={email}
                     onChange={ onInputChange } />
+            { id > 0 ||
             <input className='form-control my-3 w-75'
-                placeholder='password'
-                type='password'
-                name="password" 
-                value={password}
-                onChange={ onInputChange } />
+            placeholder='password'
+            type='password'
+            name="password" 
+            value={password}
+            onChange={ onInputChange } /> }        
+            
+            <input type='hidden' name='id' value={id} />    
             <button
                 className='btn btn-primary'>
-                crear</button>
+                { id > 0 ? 'Editar' : 'Crear' }</button>
         </form>
     )
 }
