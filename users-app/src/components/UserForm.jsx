@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+import Swal from 'sweetalert2';
 
 export const UserForm = ( { userSelected, handlerAddUser, initialUserForm }) => {
 
@@ -25,7 +26,11 @@ export const UserForm = ( { userSelected, handlerAddUser, initialUserForm }) => 
     const onSubmit = ( event ) => {
         event.preventDefault();
         if(!username || (!password && id === 0) || !email) {
-            alert('Los campos no pueden ser vacios');
+            Swal.fire(
+                'Error de validacion',
+                'Los campos no pueden ser vacios',
+                'error'
+              );
             return;
         }
        //console.log(userForm);
@@ -60,6 +65,9 @@ export const UserForm = ( { userSelected, handlerAddUser, initialUserForm }) => 
             <button
                 className='btn btn-primary'>
                 { id > 0 ? 'Editar' : 'Crear' }</button>
+            <button className="btn btn-outline-danger mx-2" type='button'>
+              Cerrar
+            </button>    
         </form>
     )
 }

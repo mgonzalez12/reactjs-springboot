@@ -2,54 +2,21 @@ import { useReducer, useState } from "react";
 import { UserForm } from "./components/UserForm";
 import { UsersList } from "./components/UsersList";
 import { usersReducer } from "./reducers/usersReducer";
+import { useUsers } from "./hooks/useUsers";
 
-const initialUsers = [
-  {
-    id: 1,
-    username: 'pepe',
-    password: '12345',
-    email: 'pepe@correo.com'
-  },
-];
 
-const initialUserForm = {
-  id: 0,
-  username:'',
-  password:'',
-  email:''
-}
 export const UsersApp = () => {
 
-  const [users, dispatch]  = useReducer(usersReducer,initialUsers);
-  const [userSelected, setUserSelected] = useState(initialUserForm);
+  const {
+    users,
+    userSelected,
+    initialUserForm,
 
-  const handlerAddUser = (user) => {
-    // console.log(user)
-    let type;
-    if(user.id === 0){
-      type = 'addUser';
-    }else {
-      type = 'updateUser';
-    }
+    handlerAddUser,
+    handlerRemoveUser,
+    handlerUserSelectedForm
 
-    dispatch({
-      type: type,
-      payload: user,
-    })
-  }
-
-  const handlerRemoveUser = (id) => {
-    //console.log(id);
-    dispatch({
-      type: 'removeUser',
-      payload:id
-    })
-  }
-
-  const handlerUserSelectedForm = (user) => {
-     //console.log(user);
-    setUserSelected({ ...user })
-  }
+} = useUsers();
 
   return (
     <>
@@ -63,6 +30,9 @@ export const UsersApp = () => {
               initialUserForm={initialUserForm} />
           </div>
           <div className="col">
+            <button className="btn btn-primary my-2">
+              Nuevo Usuario
+            </button>
             { users.length === 0 ?
             <div className="alert alert-warning">No hay usuario en el sistema</div>
               : <UsersList 
