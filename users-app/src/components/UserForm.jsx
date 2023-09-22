@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import Swal from 'sweetalert2';
 
-export const UserForm = ( { userSelected, handlerAddUser, initialUserForm }) => {
+export const UserForm = ( { userSelected, handlerAddUser, initialUserForm, handlerCloseForm }) => {
 
     const [userForm, setUserForm] = useState(initialUserForm);
 
@@ -41,6 +41,11 @@ export const UserForm = ( { userSelected, handlerAddUser, initialUserForm }) => 
         //reinicia el formulario
         setUserForm(initialUserForm);
     }
+
+    const onCloseForm = () => {
+        handlerCloseForm();
+        setUserForm(initialUserForm);
+    }
     return (
         <form onSubmit={ onSubmit }>
             <input className='form-control my-3 w-75'
@@ -65,7 +70,8 @@ export const UserForm = ( { userSelected, handlerAddUser, initialUserForm }) => 
             <button
                 className='btn btn-primary'>
                 { id > 0 ? 'Editar' : 'Crear' }</button>
-            <button className="btn btn-outline-danger mx-2" type='button'>
+            <button className="btn btn-outline-danger mx-2" type='button'
+             onClick={ () => onCloseForm()}>
               Cerrar
             </button>    
         </form>
