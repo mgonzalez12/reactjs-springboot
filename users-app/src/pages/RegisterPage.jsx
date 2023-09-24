@@ -9,8 +9,11 @@ export const RegisterPage = ({ users=[], handlerAddUser, initialUserForm }) => {
     const { id } = useParams();
 
     useEffect( () => {
-        const user = users.find(u => u.id == id) || initialUserForm;
-        setUserSelected(user);
+        console.log(id);
+        if(id){
+            const user = users.find(u => u.id == id) || initialUserForm;
+            setUserSelected(user);
+        }
     }, [id])
 
     return (
