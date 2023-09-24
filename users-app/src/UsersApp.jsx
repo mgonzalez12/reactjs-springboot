@@ -1,6 +1,4 @@
 import { LoginPages } from "./auth/pages/LoginPages";
-import { UsersPage } from "./pages/UsersPage";
-import { Navbar } from "./components/layout/Navbar";
 import { useAuth } from "./auth/hooks/useAuth";
 import { Navigate, Route, Routes } from "react-router-dom";
 import { UserRoutes } from "./routes/UserRoutes";
