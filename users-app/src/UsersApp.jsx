@@ -1,62 +1,26 @@
-import { useReducer, useState } from "react";
-import { UserForm } from "./components/UserForm";
-import { UsersList } from "./components/UsersList";
-import { usersReducer } from "./reducers/usersReducer";
-import { useUsers } from "./hooks/useUsers";
-
+import { LoginPages } from "./auth/pages/LoginPages";
+import { UsersPage } from "./pages/UsersPage";
+import { Navbar } from "./components/layout/Navbar";
+import { useAuth } from "./auth/hooks/useAuth";
+import { Navigate, Route, Routes } from "react-router-dom";
+import { UserRoutes } from "./routes/UserRoutes";
 
 export const UsersApp = () => {
 
-  const {
-    users,
-    userSelected,
-    initialUserForm,
-    visibleForm,
-
-    handlerAddUser,
-    handlerRemoveUser,
-    handlerUserSelectedForm,
-    handlerOpenForm,
-    handlerCloseForm
-
-} = useUsers();
+  const { login, handlerLogin, handlerLogout } = useAuth();
 
   return (
-    <>
-      <div className="container my-4">
-        <h2>User App</h2>
-        <div className="row">
-          
-            {!visibleForm || 
-            <div className="col">
-            <UserForm 
-              handlerAddUser={handlerAddUser} 
-              userSelected={userSelected}
-              initialUserForm={initialUserForm} 
-              handlerCloseForm={handlerCloseForm}
-              />
-              </div>
-            }
-          
-          <div className="col">
-            { visibleForm ||
-            <button className="btn btn-primary my-2"
-            onClick={handlerOpenForm}>
-              Nuevo Usuario
-            </button>
-            }
-            { users.length === 0 ?
-            <div className="alert alert-warning">No hay usuario en el sistema</div>
-              : <UsersList 
-             users={users} 
-             handlerUserSelectedForm={handlerUserSelectedForm}
-             handlerRemoveUser={handlerRemoveUser}
-             />
-            }
-          </div>
-
-        </div>
-      </div>
-    </>
+    <Routes>
+      {login.isAuth ?
+        (
+          <>
+            <Route path="/*" element={<UserRoutes login={login} handlerLogout={handlerLogout} />} />
+          </>
+        )
+        : <>
+            <Route path="/login" element={<LoginPages handlerLogin={handlerLogin} />} />
+            <Route path="/*" element={ <Navigate to="/login" />} />
+          </>}
+    </Routes>
   );
 }
