@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import Swal from 'sweetalert2';
+import { AuthContext } from '../context/AuthContext';
 
 
 const initialLoginForm = {
@@ -7,8 +8,9 @@ const initialLoginForm = {
     password:'',
 } 
 
-export const LoginPages = ({ handlerLogin }) => {
+export const LoginPages = () => {
 
+    const { handlerLogin } = useContext(AuthContext);
     const [loginForm, setLoginForm] = useState(initialLoginForm);
     const { username, password} = loginForm;
 
@@ -40,6 +42,8 @@ export const LoginPages = ({ handlerLogin }) => {
                     <div className="modal-content">
                         <div className="modal-header">
                             <h5 className="modal-title">Iniciar Sesion</h5>
+                            <p>Usuario: admin</p>
+                            <p>Clave: 12345</p>
                         </div>
                         <form onSubmit={ onSubmit }>
                             <div className="modal-body">
