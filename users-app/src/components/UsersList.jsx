@@ -1,7 +1,10 @@
-import React from 'react'
+import React, { useContext } from 'react'
 import { UserRow } from './UserRow'
+import { UserContext } from '../context/UserContext'
 
-export const UsersList = ({ handlerUserSelectedForm, handlerRemoveUser, users = [] }) => {
+export const UsersList = () => {
+    const { users } = useContext(UserContext);
+
     return (
         <>
             <p>Listado de usuarios</p>
@@ -24,8 +27,7 @@ export const UsersList = ({ handlerUserSelectedForm, handlerRemoveUser, users = 
                                 id={id}
                                 username={username}
                                 email={email}
-                                handlerUserSelectedForm={handlerUserSelectedForm}
-                                handlerRemoveUser={handlerRemoveUser}/>
+                              />
 
                         )
 
