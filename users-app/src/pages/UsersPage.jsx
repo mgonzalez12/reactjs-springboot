@@ -2,7 +2,7 @@ import { UsersList } from "../components/UsersList";
 import { usersReducer } from "../reducers/usersReducer";
 import { useUsers } from "../hooks/useUsers";
 import { UserModelForm } from "../components/UserModelForm";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 
 
@@ -12,8 +12,13 @@ export const UsersPage = () => {
     users,
     visibleForm,
     handlerOpenForm,
+    getUsers,
   
   } = useContext(UserContext);
+
+  useEffect( () => {
+    getUsers();
+  }, [])
 
   return (
     <>
