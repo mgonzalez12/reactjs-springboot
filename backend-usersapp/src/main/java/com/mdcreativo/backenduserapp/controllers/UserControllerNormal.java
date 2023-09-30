@@ -1,6 +1,8 @@
 package com.mdcreativo.backenduserapp.controllers;
 
+import com.mdcreativo.backenduserapp.models.dto.UserDto;
 import com.mdcreativo.backenduserapp.models.entities.User;
+import com.mdcreativo.backenduserapp.models.UserRequest;
 import com.mdcreativo.backenduserapp.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,13 +23,13 @@ public class UserControllerNormal {
     private UserService service;
 
     @GetMapping
-    public List<User> list() {
+    public List<UserDto> list() {
         return service.findAll();
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> show(@PathVariable Long id) {
-        Optional<User> userOptionl = service.findById(id);
+        Optional<UserDto> userOptionl = service.findById(id);
 
         if (userOptionl.isPresent()) {
             return ResponseEntity.ok(userOptionl.orElseThrow());
@@ -41,8 +43,8 @@ public class UserControllerNormal {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@RequestBody User user, @PathVariable Long id) {
-        Optional<User> o = service.update(user, id);
+    public ResponseEntity<?> update(@RequestBody UserRequest user, @PathVariable Long id) {
+        Optional<UserDto> o = service.update(user, id);
         if (o.isPresent()) {
             return ResponseEntity.status(HttpStatus.CREATED).body(o.orElseThrow());
         }
@@ -51,7 +53,7 @@ public class UserControllerNormal {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> remove(@PathVariable Long id) {
-        Optional<User> o = service.findById(id);
+        Optional<UserDto> o = service.findById(id);
 
         if (o.isPresent()) {
             service.remove(id);

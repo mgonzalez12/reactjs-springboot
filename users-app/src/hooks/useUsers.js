@@ -13,11 +13,19 @@ const initialUsers = [ ];
     email:''
   }
 
+  const initialErrors = {
+    username:'',
+    password:'',
+    email:''
+  }
+
 export const useUsers = () => {
 
     const [users, dispatch]  = useReducer(usersReducer,initialUsers);
     const [userSelected, setUserSelected] = useState(initialUserForm);
     const [visibleForm, setVisibleForm] = useState(false);
+
+    const [errors, setErrors] = useState(initialErrors);
     const navigate = useNavigate();
 
     const getUsers = async() => {
@@ -31,7 +39,9 @@ export const useUsers = () => {
 
     const handlerAddUser = async (user) => {
         let response;
-
+      try {
+        
+      
         if (user.id === 0){
           response = await save(user);
         }else {
@@ -52,6 +62,24 @@ export const useUsers = () => {
           );
           handlerCloseForm();
           navigate("/users");
+
+        } catch (error) {
+          if ( error.response && error.response.status == 400){
+            //console.log(error.response.data);
+            setErrors(error.response.data);
+          } else if ( error.response && error.response.status == 500 &&
+            error.response.data?.message?.includes('constraint')){
+              if(error.response.data?.message?.includes('UK_username')){
+                setErrors({username: "El username ya existe"});
+              }
+              if(error.response.data?.message?.includes('UK_email')){
+                setErrors({email: "El email ya existe"});
+              }
+
+          } else{
+            throw error;
+          }
+        }
       }
     
       const handlerRemoveUser = (id) => {
@@ -95,6 +123,7 @@ export const useUsers = () => {
       const  handlerCloseForm = () => {
         setVisibleForm(false);
         setUserSelected(initialUserForm);
+        setErrors({});
       }
 
     return {
@@ -102,6 +131,7 @@ export const useUsers = () => {
         userSelected,
         initialUserForm,
         visibleForm,
+        errors,
 
         handlerAddUser,
         handlerRemoveUser,
