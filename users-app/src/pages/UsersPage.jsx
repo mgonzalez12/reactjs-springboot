@@ -4,6 +4,7 @@ import { useUsers } from "../hooks/useUsers";
 import { UserModelForm } from "../components/UserModelForm";
 import { useContext, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
+import { AuthContext } from "../auth/context/AuthContext";
 
 
 export const UsersPage = () => {
@@ -15,6 +16,8 @@ export const UsersPage = () => {
     getUsers,
   
   } = useContext(UserContext);
+
+  const {login } = useContext(AuthContext);
 
   useEffect( () => {
     getUsers();
@@ -29,20 +32,8 @@ export const UsersPage = () => {
       <div className="container my-4">
         <h2>User App</h2>
         <div className="row">
-
-          {/* {!visibleForm || 
-            <div className="col">
-           <UserForm 
-              handlerAddUser={handlerAddUser} 
-              userSelected={userSelected}
-              initialUserForm={initialUserForm} 
-              handlerCloseForm={handlerCloseForm}
-            /> 
-              </div>
-            } */}
-
           <div className="col">
-            {visibleForm ||
+            {(visibleForm || !login.isAdmin )||
               <button className="btn btn-primary my-2"
                 onClick={handlerOpenForm}>
                 Nuevo Usuario
