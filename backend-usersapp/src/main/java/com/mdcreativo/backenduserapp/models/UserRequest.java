@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class UserRequest {
+public class UserRequest  implements  IUser {
 
     @NotBlank()
     private String username;
@@ -17,4 +17,11 @@ public class UserRequest {
     @NotBlank
     @Email
     private String email;
+
+    private boolean admin;
+
+    @Override
+    public  boolean isAdmin() {
+        return admin;
+    }
 }

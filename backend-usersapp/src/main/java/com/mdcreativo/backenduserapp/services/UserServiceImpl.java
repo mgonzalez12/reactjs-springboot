@@ -1,5 +1,6 @@
 package com.mdcreativo.backenduserapp.services;
 
+import com.mdcreativo.backenduserapp.models.IUser;
 import com.mdcreativo.backenduserapp.models.dto.UserDto;
 import com.mdcreativo.backenduserapp.models.dto.mapper.DtoMapperUser;
 import com.mdcreativo.backenduserapp.models.entities.Role;
@@ -54,11 +55,7 @@ public class UserServiceImpl implements UserService{
     public UserDto save(User user) {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Optional<Role> role = roleRepository.findByName("ROLE_USER");
-        List<Role> roles = new ArrayList<>();
-        if(role.isPresent()) {
-            roles.add(role.orElseThrow());
-        }
-        user.setRoles(roles);
+        user.setRoles(getRoles(user));
         return DtoMapperUser.builder().setUser(repository.save(user)).build();
     }
 
@@ -68,6 +65,7 @@ public class UserServiceImpl implements UserService{
         User userOptional = null;
         if(o.isPresent()) {
             User userDb = o.orElseThrow();
+            userDb.setRoles(getRoles(user));
             userDb.setUsername(user.getUsername());
             userDb.setEmail(user.getEmail());
             userOptional = repository.save(userDb);
@@ -84,5 +82,20 @@ public class UserServiceImpl implements UserService{
     @Override
     public Optional<User> findByUsername(String username) {
         return repository.findByUsername(username);
+    }
+
+    private List<Role> getRoles(IUser user) {
+        Optional<Role> role = roleRepository.findByName("ROLE_USER");
+        List<Role> roles = new ArrayList<>();
+        if(role.isPresent()) {
+            roles.add(role.orElseThrow());
+        }
+        if (user.isAdmin()){
+            Optional<Role> roleAdmin = roleRepository.findByName("ROLE_ADMIN");
+            if (roleAdmin.isPresent()) {
+                roles.add(roleAdmin.orElseThrow());
+            }
+        }
+        return roles;
     }
 }

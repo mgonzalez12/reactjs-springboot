@@ -7,7 +7,8 @@ export const UserForm = ( { userSelected, handlerCloseForm }) => {
     const { initialUserForm, handlerAddUser, errors } = useContext(UserContext);
     const [userForm, setUserForm] = useState(initialUserForm);
 
-    const {id, username, password, email } = userForm;
+    const {id, username, password, email, admin } = userForm;
+    const [checked, setChecked] = useState(userForm.admin);
 
     useEffect( () => {
         setUserForm({
@@ -24,33 +25,18 @@ export const UserForm = ( { userSelected, handlerCloseForm }) => {
          [name]: value,
        })
     }
+    const onCheckboxChange = () => { 
+         setChecked(!checked);
+         setUserForm({
+          ...userForm,
+            admin:checked,
+         })
+    }
 
     const onSubmit = ( event ) => {
         event.preventDefault();
-       /* if(!username || (!password && id === 0) || !email) {
-            Swal.fire(
-                'Error de validacion',
-                'Los campos no pueden ser vacios',
-                'error'
-              );
-            return;
-        }
-
-        if(!email.includes('@')){
-            Swal.fire(
-                'Error de validacion email',
-                'El email debe ser valido',
-                'error'
-              );
-            return;
-        }*/
-       //console.log(userForm);
-
         // guardar el user form en el listado de usuario
         handlerAddUser(userForm);
-
-        //reinicia el formulario
-        //setUserForm(initialUserForm);
     }
 
     const onCloseForm = () => {
@@ -72,6 +58,12 @@ export const UserForm = ( { userSelected, handlerCloseForm }) => {
                     value={email}
                     onChange={ onInputChange } />
             <p className='text-danger' >{errors?.email}</p>    
+
+            <div className="my-3 form-check">
+                <input type="checkbox"  name='admin' checked={admin} className='form-check-input'
+                onChange={ onCheckboxChange } />
+                <label className="form-check-label"> Admin </label>
+            </div>
             { id > 0 ||
             <input className='form-control my-3 w-75'
             placeholder='password'

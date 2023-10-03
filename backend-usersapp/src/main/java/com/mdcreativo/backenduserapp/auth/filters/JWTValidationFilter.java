@@ -64,7 +64,7 @@ public class JWTValidationFilter  extends BasicAuthenticationFilter {
             body.put("message", "El Token JWT no es valido");
 
             response.getWriter().write(new ObjectMapper().writeValueAsString(body));
-            response.setStatus(403);
+            response.setStatus(401);
             response.setContentType("application/json");
         }
     }

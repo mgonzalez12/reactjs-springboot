@@ -5,145 +5,162 @@ import { useNavigate } from "react-router-dom";
 import { findAll, remove, save, update } from "../services/userService";
 import { AuthContext } from "../auth/context/AuthContext";
 
-const initialUsers = [ ];
-  
-  const initialUserForm = {
-    id: 0,
-    username:'',
-    password:'',
-    email:''
-  }
+const initialUsers = [];
 
-  const initialErrors = {
-    username:'',
-    password:'',
-    email:''
-  }
+const initialUserForm = {
+  id: 0,
+  username: '',
+  password: '',
+  email: '',
+  admin: false
+}
+
+const initialErrors = {
+  username: '',
+  password: '',
+  email: ''
+}
 
 export const useUsers = () => {
 
-    const [users, dispatch]  = useReducer(usersReducer,initialUsers);
-    const [userSelected, setUserSelected] = useState(initialUserForm);
-    const [visibleForm, setVisibleForm] = useState(false);
+  const [users, dispatch] = useReducer(usersReducer, initialUsers);
+  const [userSelected, setUserSelected] = useState(initialUserForm);
+  const [visibleForm, setVisibleForm] = useState(false);
 
-    const [errors, setErrors] = useState(initialErrors);
-    const navigate = useNavigate();
-    const {login } = useContext(AuthContext);
+  const [errors, setErrors] = useState(initialErrors);
+  const navigate = useNavigate();
+  const { login, handlerLogout } = useContext(AuthContext);
 
-    const getUsers = async() => {
+  const getUsers = async () => {
+    try {
       const result = await findAll();
       console.log(result);
       dispatch({
-         type: 'loadingUsers',
-         payload: result.data
+        type: 'loadingUsers',
+        payload: result.data
       })
-    }
-    
-
-    const handlerAddUser = async (user) => {
-
-      if (!login.isAdmin) return;
-        let response;
-      try {
-        
       
-        if (user.id === 0){
-          response = await save(user);
-        }else {
-          response = await update(user);
+    } catch (error) {
+      if (error.response.status == 401) {
+        handlerLogout();
+      }
+    }
+  }
+
+
+  const handlerAddUser = async (user) => {
+
+    if (!login.isAdmin) return;
+    let response;
+    try {
+
+
+      if (user.id === 0) {
+        response = await save(user);
+      } else {
+        response = await update(user);
+      }
+      // console.log(user)
+      //let type = (user.id === 0)? 'addUser' : 'updateUser';
+
+      dispatch({
+        type: (user.id === 0) ? 'addUser' : 'updateUser',
+        payload: response.data,
+      })
+
+      Swal.fire(
+        (user.id === 0) ? 'Usuario Creado' : 'Usuario Actualizado',
+        (user.id === 0) ? 'El usuario ha sido creado con exito' : 'El usuario ha sido actualizado con exito',
+        'success'
+      );
+      handlerCloseForm();
+      navigate("/users");
+
+    } catch (error) {
+      if (error.response && error.response.status == 400) {
+        //console.log(error.response.data);
+        setErrors(error.response.data);
+      } else if (error.response && error.response.status == 500 &&
+        error.response.data?.message?.includes('constraint')) {
+        if (error.response.data?.message?.includes('UK_username')) {
+          setErrors({ username: "El username ya existe" });
         }
-        // console.log(user)
-        //let type = (user.id === 0)? 'addUser' : 'updateUser';
-    
-        dispatch({
-          type: (user.id === 0)? 'addUser' : 'updateUser',
-          payload: response.data,
-        })
+        if (error.response.data?.message?.includes('UK_email')) {
+          setErrors({ email: "El email ya existe" });
+        }
+      } else if (error.response.status == 401) {
+        handlerLogout();
+      } else {
+        throw error;
+      }
+    }
+  }
 
-        Swal.fire(
-            (user.id === 0) ?'Usuario Creado' : 'Usuario Actualizado',
-            (user.id === 0) ?'El usuario ha sido creado con exito' : 'El usuario ha sido actualizado con exito',
+  const handlerRemoveUser = (id) => {
+    //console.log(id);
+
+
+    Swal.fire({
+      title: 'Estas Seguro que desea eliminar?',
+      text: "Cuidado el usuario sera eliminado!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Si, Eliminar!'
+    }).then( async (result) => {
+
+      if (result.isConfirmed) {
+        try {
+          await remove(id);
+          dispatch({
+            type: 'removeUser',
+            payload: id
+          })
+          Swal.fire(
+            'Usuario Eliminado!',
+            'El usuario se ha eliminado con exito',
             'success'
-          );
-          handlerCloseForm();
-          navigate("/users");
-
+          )
         } catch (error) {
-          if ( error.response && error.response.status == 400){
-            //console.log(error.response.data);
-            setErrors(error.response.data);
-          } else if ( error.response && error.response.status == 500 &&
-            error.response.data?.message?.includes('constraint')){
-              if(error.response.data?.message?.includes('UK_username')){
-                setErrors({username: "El username ya existe"});
-              }
-              if(error.response.data?.message?.includes('UK_email')){
-                setErrors({email: "El email ya existe"});
-              }
-
-          } else{
-            throw error;
+          if (error.response.status == 401) {
+            handlerLogout();
           }
         }
+
       }
-    
-      const handlerRemoveUser = (id) => {
-        //console.log(id);
-       
+    })
+  }
 
-        Swal.fire({
-            title: 'Estas Seguro que desea eliminar?',
-            text: "Cuidado el usuario sera eliminado!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Si, Eliminar!'
-          }).then((result) => {
-            if (result.isConfirmed) {
-                remove(id);
-                dispatch({
-                    type: 'removeUser',
-                    payload:id
-                  })
-              Swal.fire(
-                'Usuario Eliminado!',
-                'El usuario se ha eliminado con exito',
-                'success'
-              )
-            }
-          })
-      }
-    
-      const handlerUserSelectedForm = (user) => {
-         //console.log(user);
-         setVisibleForm(true);
-        setUserSelected({ ...user })
-      }
+  const handlerUserSelectedForm = (user) => {
+    //console.log(user);
+    setVisibleForm(true);
+    setUserSelected({ ...user })
+  }
 
-      const handlerOpenForm = () => {
-        setVisibleForm(true);
-      }
+  const handlerOpenForm = () => {
+    setVisibleForm(true);
+  }
 
-      const  handlerCloseForm = () => {
-        setVisibleForm(false);
-        setUserSelected(initialUserForm);
-        setErrors({});
-      }
+  const handlerCloseForm = () => {
+    setVisibleForm(false);
+    setUserSelected(initialUserForm);
+    setErrors({});
+  }
 
-    return {
-        users,
-        userSelected,
-        initialUserForm,
-        visibleForm,
-        errors,
+  return {
+    users,
+    userSelected,
+    initialUserForm,
+    visibleForm,
+    errors,
 
-        handlerAddUser,
-        handlerRemoveUser,
-        handlerUserSelectedForm,
-        handlerOpenForm,
-        handlerCloseForm,
-        getUsers
+    handlerAddUser,
+    handlerRemoveUser,
+    handlerUserSelectedForm,
+    handlerOpenForm,
+    handlerCloseForm,
+    getUsers
 
-    }
+  }
 } 
