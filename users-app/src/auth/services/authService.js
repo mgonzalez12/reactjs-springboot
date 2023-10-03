@@ -1,9 +1,8 @@
 import axios from "axios";
 
 export const loginUser =  async ({username, password}) => {
-    const baseUrl = 'http://localhost:8080'
     try {
-        return await axios.post(`${baseUrl}/login`, {
+        return await axios.post(`${import.meta.env.VITE_API_BASE_URL}/login`, {
             username,
             password
         });
