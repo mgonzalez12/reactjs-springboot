@@ -1,25 +1,15 @@
-import { LoginPages } from "./auth/pages/LoginPages";
-import { Navigate, Route, Routes } from "react-router-dom";
-import { UserRoutes } from "./routes/UserRoutes";
-import { useContext } from "react";
-import { AuthContext } from "./auth/context/AuthContext";
+import { Provider } from "react-redux"
+import { AppRoutes } from "./AppRoutes"
+import { store } from "./store/store"
+
 
 export const UsersApp = () => {
 
-  const { login } = useContext(AuthContext);
-
   return (
-    <Routes>
-      {login.isAuth ?
-        (
-          <>
-            <Route path="/*" element={<UserRoutes />} />
-          </>
-        )
-        : <>
-            <Route path="/login" element={<LoginPages />} />
-            <Route path="/*" element={ <Navigate to="/login" />} />
-          </>}
-    </Routes>
-  );
+    <>
+      <Provider store={store}>
+        <AppRoutes />
+      </Provider>
+    </>
+  )
 }

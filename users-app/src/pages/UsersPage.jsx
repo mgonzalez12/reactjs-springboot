@@ -1,11 +1,8 @@
 import { UsersList } from "../components/UsersList";
-import { usersReducer } from "../reducers/usersReducer";
 import { useUsers } from "../hooks/useUsers";
 import { UserModelForm } from "../components/UserModelForm";
-import { useContext, useEffect } from "react";
-import { UserContext } from "../context/UserContext";
-import { AuthContext } from "../auth/context/AuthContext";
-
+import { useAuth } from "../auth/hooks/useAuth";
+import { useEffect } from "react";
 
 export const UsersPage = () => {
 
@@ -15,9 +12,9 @@ export const UsersPage = () => {
     handlerOpenForm,
     getUsers,
   
-  } = useContext(UserContext);
+  } = useUsers();
 
-  const {login } = useContext(AuthContext);
+  const {login } = useAuth();
 
   useEffect( () => {
     getUsers();

@@ -1,23 +1,20 @@
-import React, { useContext } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { UsersPage } from '../pages/UsersPage'
 import { Navbar } from '../components/layout/Navbar'
 import { RegisterPage } from '../pages/RegisterPage'
-import { useUsers } from '../hooks/useUsers'
-import { UserProvider } from '../context/UserProvider'
-import { AuthContext } from '../auth/context/AuthContext'
+import { useSelector } from 'react-redux'
+
 
 export const UserRoutes = () => {
 
-    const {login } = useContext(AuthContext);
+    const { isAdmin } = useSelector(state => state.auth);
    
     return (
         <>
-            <UserProvider>
                 <Navbar />
                 <Routes >
                     <Route path='users' element={<UsersPage />} />
-                    {!login.isAdmin ||
+                    {!isAdmin ||
                         <>
                     <Route path='users/register' element={<RegisterPage />} />
                     <Route path='users/edit/:id' element={<RegisterPage />} />
@@ -25,7 +22,6 @@ export const UserRoutes = () => {
                     </>}
 
                 </Routes>
-            </UserProvider>
         </>
     )
 }
