@@ -1,29 +1,30 @@
 import Swal from "sweetalert2";
 import { useNavigate } from "react-router-dom";
-import { findAll, remove, save, update } from "../services/userService";
+import { findAllPages, remove, save, update } from "../services/userService";
 import { useDispatch, useSelector } from "react-redux";
 import { initialUserForm, addUser, loadingUsers, onCloseForm, onOpenForm, onUserSelectedForm, removeUser, updateUser, loadingError } from "../store/slices/users/usersSlice";
 import { useAuth } from "../auth/hooks/useAuth";
 
 export const useUsers = () => {
 
-  const { users, userSelected, visibleForm, errors, isLoading } = useSelector(state => state.users);
+  const { users, userSelected, visibleForm, errors, isLoading, paginator } = useSelector(state => state.users);
   const dispatch = useDispatch();
 
   const navigate = useNavigate();
+
   const { login, handlerLogout } = useAuth();
 
-  const getUsers = async () => {
+  const getUsers = async (page = 0) => {
     try {
-      const result = await findAll();
-      console.log(result);
-      dispatch(loadingUsers(result.data));       
+      const result = await findAllPages(page);
+      dispatch(loadingUsers(result.data));
     } catch (error) {
-      if (error.response.status == 401) {
+      if (error.response?.status == 401) {
         handlerLogout();
       }
     }
   }
+
 
 
   const handlerAddUser = async (user) => {
@@ -36,9 +37,9 @@ export const useUsers = () => {
         dispatch(addUser(response.data));
       } else {
         response = await update(user);
-        dispatch(updateUser(response.data ));
+        dispatch(updateUser(response.data));
       }
-    
+
       Swal.fire(
         (user.id === 0) ? 'Usuario Creado' : 'Usuario Actualizado',
         (user.id === 0) ? 'El usuario ha sido creado con exito' : 'El usuario ha sido actualizado con exito',
@@ -75,7 +76,7 @@ export const useUsers = () => {
       confirmButtonColor: '#3085d6',
       cancelButtonColor: '#d33',
       confirmButtonText: 'Si, Eliminar!'
-    }).then( async (result) => {
+    }).then(async (result) => {
 
       if (result.isConfirmed) {
         try {
@@ -117,6 +118,7 @@ export const useUsers = () => {
     visibleForm,
     errors,
     isLoading,
+    paginator,
     handlerAddUser,
     handlerRemoveUser,
     handlerUserSelectedForm,

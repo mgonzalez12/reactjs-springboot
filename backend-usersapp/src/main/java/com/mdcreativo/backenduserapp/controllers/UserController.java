@@ -7,6 +7,9 @@ import com.mdcreativo.backenduserapp.models.entities.User;
 import com.mdcreativo.backenduserapp.services.UserService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
@@ -32,19 +35,18 @@ public class UserController {
         return service.findAll();
     }
 
+    @GetMapping("/page/{page}")
+    public Page<UserDto> list(@PathVariable Integer page){
+        Pageable pageable = PageRequest.of(page, 4);
+        return service.findAll(pageable);
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<?> show(@PathVariable Long id){
         return service.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
-
-    /*
-    @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody User user, BindingResult result) {
-        return result.hasErrors() ? validation(result) : ResponseEntity.status(HttpStatus.CREATED).body(service.save(user));
-    }
-    */
 
     @PostMapping
     public ResponseEntity<?> create(@Valid @RequestBody User user, BindingResult result) {

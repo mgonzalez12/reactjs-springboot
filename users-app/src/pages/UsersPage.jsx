@@ -3,13 +3,18 @@ import { useUsers } from "../hooks/useUsers";
 import { UserModelForm } from "../components/UserModelForm";
 import { useAuth } from "../auth/hooks/useAuth";
 import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { Paginator } from "../components/layout/Paginator";
 
 export const UsersPage = () => {
+
+  const { page } = useParams();
 
   const {
     users,
     visibleForm,
     isLoading,
+    paginator,
     handlerOpenForm,
     getUsers,
   
@@ -18,8 +23,8 @@ export const UsersPage = () => {
   const {login } = useAuth();
 
   useEffect( () => {
-    getUsers();
-  }, [])
+    getUsers(page);
+  }, [,page])
 
   if (isLoading) {
     <div className="container my-4">
@@ -50,7 +55,11 @@ export const UsersPage = () => {
             }
             {users.length === 0 ?
               <div className="alert alert-warning">No hay usuario en el sistema</div>
-              : <UsersList />
+              : <>
+                <UsersList />
+                <Paginator url="/users/page" paginator={paginator} />
+                </> 
+              
             }
           </div>
 

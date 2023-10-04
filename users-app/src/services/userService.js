@@ -4,10 +4,19 @@ import usersApi from '../apis/usersApi';
 
 const BASE_URL = '';
 
-
-export const findAll = async () => {
+export const findAll = async() => {
     try {
         const response = await usersApi.get(BASE_URL);
+        return response;
+    } catch (error) {
+        console.error(error);
+        throw error;
+    }
+}
+
+export const findAllPages = async (page = 0) => {
+    try {
+        const response = await usersApi.get(`${BASE_URL}/page/${page}`);
         return response;
     } catch (error) {
         console.error(error);

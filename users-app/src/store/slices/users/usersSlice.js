@@ -18,6 +18,7 @@ export const usersSlice = createSlice({
     name: 'users',
     initialState: {
         users: [],
+        paginator: {},
         userSelected: initialUserForm,
         visibleForm: false,
         errors: initialErrors,
@@ -52,8 +53,9 @@ export const usersSlice = createSlice({
             state.userSelected = initialUserForm;
             state.visibleForm = false;
         },
-        loadingUsers: (state, action) => {
-            state.users = action.payload;
+        loadingUsers: (state, {payload}) => {
+            state.users = payload.content;
+            state.paginator = payload;
             state.isLoading = false;
         },
         onUserSelectedForm: (state, action) => {
